@@ -1,0 +1,26 @@
+---
+applications:
+- name: i314008-refapps-espm
+  host: i314008-refapps-espm
+  memory: 1G
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
+  path: java/espm-cloud-web/target/espm-cloud-web.war
+  env:
+    CORS_DOMAIN: "cfapps.canaryac.vlab-sapcloudplatformdev.cn"
+    DATABASE_TYPE: "postgresql"
+  services:
+    - espm-postgres
+    - espm-uaa-refapps
+- name: i314008-espm-ui
+  host: i314008-espm-ui
+  memory: 128M
+  path: web
+  env:
+    TENANT_HOST_PATTERN: "^(.*).cfapps.canaryac.vlab-sapcloudplatformdev.cn"
+    destinations: >
+      [
+        {"name":"securedest", "url":"https://i314008-refapps-espm.cfapps.canaryac.vlab-sapcloudplatformdev.cn", "forwardAuthToken": true },
+        {"name":"dest", "url":"https://i314008-refapps-espm.cfapps.canaryac.vlab-sapcloudplatformdev.cn"}
+      ]
+  services:
+    - espm-uaa-refapps
